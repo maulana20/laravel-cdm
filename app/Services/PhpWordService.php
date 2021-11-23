@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Services;
+
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Shared\Html;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\TemplateProcessor;
+
+class PhpWordService extends PhpWord
+{
+    protected $request;
+    
+    public function __construct($request)
+    {
+        parent::__construct();
+        
+        $this->request = $request;
+    }
+    
+    public function convertToWord($fileName)
+    {
+        $section = $this->addSection();
+        
+        Html::addHtml($section, $this->request->get('content'), false, false);
+        
+        header('Content-Type: application/octet-stream');
+        
+        header('Content-Disposition: attachment;filename="' . $fileName);
+        
+        $wordWriter = IOFactory::createWriter($this, 'Word2007');
+        
+        $wordWriter->save('php://output');
+    }
+    
+    public function convertToPdf($documentPath)
+    {
+        Settings::setPdfRendererName(Settings::PDF_RENDERER_MPDF);
+        
+        $wordDocument = IOFactory::load($documentPath);
+        
+        Settings::setPdfRendererPath(dirname($documentPath));
+        
+        $ext = pathinfo($documentPath, PATHINFO_EXTENSION);
+        
+        $pdfWriter = IOFactory::createWriter($wordDocument, 'PDF');
+        
+        $pdfWriter->save(str_replace($ext, 'pdf', $documentPath));
+    }
+    
+    public function replaceTemplateWord($templatePath, $filePath)
+    {
+        $wordTemplate = new TemplateProcessor($templatePath);
+        
+        $parser = new \HTMLtoOpenXML\Parser();
+        
+        $ooXml = $parser->fromHTML($this->request->get('content'));
+        
+        $wordTemplate->setValue('name', $this->request->get('name'));
+        
+        $wordTemplate->setValue('content', $ooXml);
+        
+        $wordTemplate->saveAs($filePath);
+    }
+}
