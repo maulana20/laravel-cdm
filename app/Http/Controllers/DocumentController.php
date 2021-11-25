@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\Document\StoreRequest;
 use App\Services\PhpWordService;
+use Ramsey\Uuid\Uuid;
 
 class DocumentController extends Controller
 {
@@ -17,7 +18,9 @@ class DocumentController extends Controller
     {
         $templatePath = '../storage/app/public/template/template.docx';
         
-        $filePath = '../storage/app/public/document/' . $request->get('name') . '.docx';
+        $fileName = Uuid::uuid4()->toString();
+        
+        $filePath = '../storage/app/public/document/' . $fileName . '.docx';
         
         $phpWordService = new PhpWordService($request);
         
@@ -25,7 +28,15 @@ class DocumentController extends Controller
         
         $phpWordService->convertToPdf($filePath);
         
-        return redirect()->route('document.create')->with('success', 'Document successfully stored');
+        return redirect()->route('document.create')->with([
+            
+            'success' => 'Document successfully stored',
+            
+            'pathDocx' => url('storage/document/' . $fileName . '.docx'),
+            
+            'pathPdf' => url('storage/document/' . $fileName . '.pdf')
+            
+        ]);
     }
     
     public function storeCreate(StoreRequest $request)

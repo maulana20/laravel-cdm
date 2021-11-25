@@ -12,8 +12,14 @@
                     <validation-error :errors="'{{ json_encode($errors->all()) }}'"></validation-error>
                 @endif
                 
-                @if(session()->has('success'))
-                    <div class="alert alert-success">{!! session()->get('success') !!}</div>
+                @if (session()->has('success'))
+                    <div class="alert alert-success">
+                        {!! session()->get('success') !!}
+                        <div class="float-right">
+                            <button type="submit" class="btn btn-sm btn-success" onclick="window.open('{{ session()->get('pathDocx') }}', '_blank')">DOCX</button>
+                            <button type="submit" class="btn btn-sm btn-success" onclick="window.open('{{ session()->get('pathPdf') }}', '_blank')">PDF</button>
+                        </div>
+                    </div>
                 @endif
                 
                 <form action="{{ route('document.store') }}" method="post" enctype="multipart/form-data">

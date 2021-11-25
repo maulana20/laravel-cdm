@@ -19,6 +19,13 @@ class PhpWordService extends PhpWord
         $this->request = $request;
     }
     
+    private function _parserXml($value)
+    {
+        $parser = new \HTMLtoOpenXML\Parser();
+        
+        return $parser->fromHTML($value);
+    }
+    
     public function convertToWord($fileName)
     {
         $section = $this->addSection();
@@ -53,13 +60,9 @@ class PhpWordService extends PhpWord
     {
         $wordTemplate = new TemplateProcessor($templatePath);
         
-        $parser = new \HTMLtoOpenXML\Parser();
-        
-        $ooXml = $parser->fromHTML($this->request->get('content'));
-        
         $wordTemplate->setValue('name', $this->request->get('name'));
         
-        $wordTemplate->setValue('content', $ooXml);
+        $wordTemplate->setValue('content', $this->_parserXml($this->request->get('content')));
         
         $wordTemplate->saveAs($filePath);
     }
