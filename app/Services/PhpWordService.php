@@ -26,7 +26,7 @@ class PhpWordService extends PhpWord
         return $parser->fromHTML($value);
     }
     
-    public function convertToWord($fileName)
+    public function convertToWord($fileName) : void
     {
         $section = $this->addSection();
         
@@ -41,7 +41,7 @@ class PhpWordService extends PhpWord
         $wordWriter->save('php://output');
     }
     
-    public function convertToPdf($documentPath)
+    public function convertToPdf($documentPath) : void
     {
         Settings::setPdfRendererName(Settings::PDF_RENDERER_MPDF);
         
@@ -56,7 +56,7 @@ class PhpWordService extends PhpWord
         $pdfWriter->save(str_replace($ext, 'pdf', $documentPath));
     }
     
-    public function replaceTemplateWord($templatePath, $filePath)
+    public function replaceTemplateWord($templatePath, $filePath) : void
     {
         $wordTemplate = new TemplateProcessor($templatePath);
         

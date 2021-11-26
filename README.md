@@ -12,3 +12,15 @@ Sistem management document dengan text editor
 5.  `$ php artisan storage:link`
 6.  `$ php artisan migrate`
 7.  `$ php artisan serve`
+
+### Note
+- ubah path libreoffice pada **.env** `CDMSUPPORT_LIBREOFFICE="C:/Program Files/LibreOffice/program/soffice"`
+- kemudian refresh config
+```bash
+$ php artisan config:cache
+$ php artisan cache:clear
+```
+
+### Requirement
+- [LibreOffice](https://www.libreoffice.org/download/download/)
+- [Imagick](https://ziixon93.blogspot.com/2020/07/cara-memasang-imagemagick-di-xampp.html)
