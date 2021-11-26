@@ -35,7 +35,8 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @if (Auth::check())
-                            <li><a href="{{ route('document.create') }}">Documents</a></li>
+                            <li><a href="{{ route('document.create') }}">Document</a></li>
+                            <li><a href="{{ route('paper.create') }}">Paper</a></li>
                         @endif
                     </ul>
 

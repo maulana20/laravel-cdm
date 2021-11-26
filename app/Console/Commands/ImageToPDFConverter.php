@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Imagick;
+use App\Models\Paper;
+use Ramsey\Uuid\Uuid;
 
 class ImageToPDFConverter extends Command
 {
@@ -13,7 +15,7 @@ class ImageToPDFConverter extends Command
      *
      * @var string
      */
-    protected $signature = 'image2pdf:convert { document : document location }';
+    protected $signature = 'image2pdf:convert { id : paper id }';
 
     /**
      * The console command description.
@@ -43,15 +45,6 @@ class ImageToPDFConverter extends Command
         
         try {
             
-            $document = $this->argument('document');
-            
-            if ( empty($document) ) {
-                
-                $this->error("Document must to fill.");
-                
-                return false;
-            }
-            
             if ( !extension_loaded('imagick') ) {
                 
                 $this->error("Imagick not installed.");
@@ -59,17 +52,14 @@ class ImageToPDFConverter extends Command
                 return false;
             }
             
-            $source = Storage::disk('public')->path($document);
+            $paper = Paper::find($this->argument('id'));
             
-            $im = new Imagick();
-            
-            $im->readimage($source);
-            
-            $pages = $im->getNumberImages();
-            
-            $im->clear();
-            
-            $im->destroy();
+            if ( empty($paper) ) {
+                
+                $this->error("Paper not found.");
+                
+                return false;
+            }
             
             $template = "<body style='background-image: url(%s);
                 background-position: top left;
@@ -79,9 +69,12 @@ class ImageToPDFConverter extends Command
             
             $mpdf = new \Mpdf\Mpdf();
             
-            for ($iteration = 0; $iteration < $pages; $iteration++) {
+            $images = $paper->images()->get();
                 
-                $filePathStorage = Storage::disk('public')->path('document') . DIRECTORY_SEPARATOR . explode('.', basename($document))[0] . "{$iteration}.jpg";
+            
+            for ($iteration = 0; $iteration < $paper->images()->count(); $iteration++) {
+                
+                $filePathStorage = Storage::disk('public')->path($images[$iteration]->image);
                 
                 $mpdf->addPage();
                 
@@ -89,7 +82,11 @@ class ImageToPDFConverter extends Command
                 
             }
             
-            $mpdf->Output(Storage::disk('public')->path('document') . DIRECTORY_SEPARATOR . 'result.pdf', 'F');
+            $fileNameLocation = 'document/' . Uuid::uuid4()->toString() . '.pdf';
+            
+            $mpdf->Output(Storage::disk('public')->path($fileNameLocation), 'F');
+            
+            $paper->document->update([ 'final' => $fileNameLocation ]);
             
         } catch (Exception $e) {
             

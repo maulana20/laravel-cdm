@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Imagick;
+use App\Models\Paper;
 
 class PDFToImageConverter extends Command
 {
@@ -13,7 +14,7 @@ class PDFToImageConverter extends Command
      *
      * @var string
      */
-    protected $signature = 'pdf2image:convert { document : document location }';
+    protected $signature = 'pdf2image:convert { id : paper id }';
 
     /**
      * The console command description.
@@ -43,15 +44,6 @@ class PDFToImageConverter extends Command
         
         try {
             
-            $document = $this->argument('document');
-            
-            if ( empty($document) ) {
-                
-                $this->error("Document must to fill.");
-                
-                return false;
-            }
-            
             if ( !extension_loaded('imagick') ) {
                 
                 $this->error("Imagick not installed.");
@@ -59,7 +51,16 @@ class PDFToImageConverter extends Command
                 return false;
             }
             
-            $source = Storage::disk('public')->path($document);
+            $paper = Paper::find($this->argument('id'));
+            
+            if ( empty($paper) ) {
+                
+                $this->error("Paper not found.");
+                
+                return false;
+            }
+            
+            $source = Storage::disk('public')->path($paper->document->quarter);
             
             $im = new Imagick();
             
@@ -93,9 +94,13 @@ class PDFToImageConverter extends Command
                 
                 $im->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
                 
-                $filePathStorage = Storage::disk('public')->path('document') . DIRECTORY_SEPARATOR . explode('.', basename($document))[0] . "{$iteration}.jpg";
+                $fileNameLocation = str_replace( basename($paper->document->quarter), explode('.', basename($paper->document->quarter))[0] . "-{$iteration}.jpg", $paper->document->quarter );
+                
+                $filePathStorage = Storage::disk('public')->path($fileNameLocation);
                 
                 $im->writeImage($filePathStorage);
+                
+                $paper->images()->create([ 'image' => $fileNameLocation ]);
                 
                 $im->clear();
                 
