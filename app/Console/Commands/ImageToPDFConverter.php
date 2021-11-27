@@ -70,7 +70,6 @@ class ImageToPDFConverter extends Command
             $mpdf = new \Mpdf\Mpdf();
             
             $images = $paper->images()->get();
-                
             
             for ($iteration = 0; $iteration < $paper->images()->count(); $iteration++) {
                 
