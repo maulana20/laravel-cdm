@@ -28,6 +28,8 @@ Vue.component('input-content', require('./components/InputContent.vue').default)
 
 Vue.component('validation-error', require('./components/ValidationError.vue').default);
 
+Vue.component('modal-image-button', require('./components/ModalImageButton.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -18,8 +18,17 @@ class PaperDocument extends Model
     
     public $timestamps = false;
     
+    protected $appends = [
+        'final_full'
+    ];
+    
     public function paper()
     {
         $this->belongsTo(Paper::class);
+    }
+    
+    public function getFinalFullAttribute()
+    {
+        return url('storage/' . $this->final);
     }
 }

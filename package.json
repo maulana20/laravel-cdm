@@ -25,6 +25,7 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
-        "tinymce": "^5.10.2"
+        "tinymce": "^5.10.2",
+        "vue-easy-lightbox": "^0.16.2"
     }
 }

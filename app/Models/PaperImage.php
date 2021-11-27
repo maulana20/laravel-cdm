@@ -16,8 +16,17 @@ class PaperImage extends Model
     
     public $timestamps = false;
     
+    protected $appends = [
+        'image_full'
+    ];
+    
     public function paper()
     {
         $this->belongsTo(Paper::class);
+    }
+    
+    public function getImageFullAttribute()
+    {
+        return url('storage/' . $this->image);
     }
 }

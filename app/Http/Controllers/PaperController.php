@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Artisan;
 
 class PaperController extends Controller
 {
+    public function index()
+    {
+        $papers = Paper::all();
+        
+        return view('paper.index', compact('papers'));
+    }
+    
     public function create()
     {
         return view('paper.create');

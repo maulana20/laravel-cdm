@@ -13,6 +13,15 @@ Sistem management document dengan text editor
 6.  `$ php artisan migrate`
 7.  `$ php artisan serve`
 
+### Fitur
+
+Fitur pada Aplikasi ini meliputi:
+
+1. Document
+    - Dapat mengubah dokument template sesuai variabel
+2. Paper
+    - Dapat mengkonversi dokument yang di upload **docx** menjadi pdf dan image
+
 ### Note
 - ubah path libreoffice pada **.env** `CDMSUPPORT_LIBREOFFICE="C:/Program Files/LibreOffice/program/soffice"`
 - kemudian refresh config
